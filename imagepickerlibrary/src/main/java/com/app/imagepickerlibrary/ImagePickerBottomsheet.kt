@@ -22,8 +22,10 @@ import java.lang.IllegalStateException
 
 class ImagePickerBottomsheet(@LayoutRes val layoutId: Int = R.layout.bottomsheet_layout_upload_image_options) : BottomSheetDialogFragment(), View.OnClickListener {
 
-    private var mListener: ItemClickListener? = null
+    var mListener: ItemClickListener? = null
     lateinit var binding: BottomsheetLayoutUploadImageOptionsBinding
+    
+    fun setItemClickListener(item: ItemClickListener) { mListener = item }
 
     override fun getTheme(): Int {
         return R.style.roundBaseBottomSheetDialog
@@ -60,10 +62,13 @@ class ImagePickerBottomsheet(@LayoutRes val layoutId: Int = R.layout.bottomsheet
     override fun onAttach(context: Context) {
         super.onAttach(context)
         parentFragment?.let { fragment ->
-            mListener = if(fragment is ItemClickListener) fragment else throw IllegalStateException(getString(R.string.error_invalid_context_message))
+            
+            if (mListener == null) {
+                mListener = if(fragment is ItemClickListener) fragment else throw IllegalStateException(getString(R.string.error_invalid_context_message))
         } ?: kotlin.run {
             mListener = if(context is ItemClickListener) context else throw IllegalStateException(getString(R.string.error_invalid_context_message))
         }
+            }
     }
 
     override fun onDetach() {
